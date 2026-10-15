@@ -2,31 +2,224 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Hola n8n</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conexión a n8n | David Bravo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #ea485e;
+      --primary-hover: #d2374d;
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      background-color: rgba(234, 72, 94, 0.15);
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.25rem;
+      text-align: left;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(234, 72, 94, 0.2);
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #resultado {
+      margin-top: 1.5rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      min-height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .info {
+      background-color: rgba(51, 65, 85, 0.4);
+      color: var(--text-muted);
+    }
+
+    .success {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .error {
+      background-color: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+  </style>
 </head>
 <body>
-  <h1>Hola n8n</h1>
-  <input type="text" id="texto" placeholder="Escribe algo">
-  <button id="enviar">Enviar</button>
-  <p id="resultado"></p>
+
+  <div class="container">
+    <div class="badge">Práctica IA3-8</div>
+    <h1>Conexión con n8n</h1>
+    <p class="subtitle">Escribe un mensaje para enviarlo al flujo de n8n</p>
+
+    <div class="input-group">
+      <input type="text" id="texto" placeholder="Ej. Hola mundo" autocomplete="off">
+    </div>
+
+    <button id="enviar">Enviar a n8n</button>
+
+    <div id="resultado" class="info">Esperando mensaje...</div>
+  </div>
 
   <script>
     const boton = document.getElementById("enviar");
     const campo = document.getElementById("texto");
     const resultado = document.getElementById("resultado");
 
-    boton.addEventListener("click", async () => {
-      resultado.textContent = "Enviando...";
+    async function enviarMensaje() {
+      const valorTexto = campo.value.trim();
+      if (!valorTexto) {
+        resultado.textContent = "Por favor, escribe algo antes de enviar.";
+        resultado.className = "error";
+        return;
+      }
+
+      boton.disabled = true;
+      boton.textContent = "Enviando...";
+      resultado.textContent = "Conectando con n8n...";
+      resultado.className = "info";
+
       try {
         const respuesta = await fetch("/enviar", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ texto: campo.value }),
+          body: JSON.stringify({ texto: valorTexto }),
         });
+        
         const datos = await respuesta.json();
-        resultado.textContent = datos.respuesta || datos.error;
+
+        if (respuesta.ok) {
+          resultado.textContent = datos.respuesta || "Respuesta recibida correctamente";
+          resultado.className = "success";
+        } else {
+          resultado.textContent = datos.error || "Hubo un problema al procesar la solicitud";
+          resultado.className = "error";
+        }
       } catch (error) {
-        resultado.textContent = "Error al conectar con el servidor";
+        resultado.textContent = "Error crítico al conectar con el servidor";
+        resultado.className = "error";
+      } finally {
+        boton.disabled = false;
+        boton.textContent = "Enviar a n8n";
+      }
+    }
+
+    boton.addEventListener("click", enviarMensaje);
+    
+    campo.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        enviarMensaje();
       }
     });
   </script>
